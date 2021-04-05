@@ -29,10 +29,16 @@ class Meteor(pygame.sprite.Sprite):
 
     def update(self):
         self.movement()
+        self.destroy()
 
     def movement(self):
-        self.rect.centerx = 50 * math.sin(2*3.1416*(self.x_speed/160)*self.rect.centery) + 640
+        self.rect.centerx += self.x_speed
         self.rect.centery += self.y_speed
+    def destroy(self):
+        self.kill() if self.rect.right > 1350 else None
+        self.kill() if self.rect.left < -50 else None
+        self.kill() if self.rect.top < -50 else None
+        self.kill() if self.rect.bottom > 780 else None
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -44,16 +50,25 @@ spaceship = SpaceShip('game-assets/spaceship.png', 640, 500, 10)
 spaceship_group = pygame.sprite.GroupSingle()
 spaceship_group.add(spaceship)
 
-meteor = Meteor('game-assets/Meteor1.png', 640, 0, 1, 1)
 meteor_group = pygame.sprite.Group()
-meteor_group.add(meteor)
+METEOR_EVENT = pygame.USEREVENT
+pygame.time.set_timer(METEOR_EVENT, 100)
 
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    screen.fill((45,45,60))
+        if event.type == METEOR_EVENT:
+            random_meteor = random.choice(['game-assets/Meteor1.png', 'game-assets/Meteor2.png', 'game-assets/Meteor3.png'])
+            random_xpos = random.randrange(1, 1280)
+            random_ypos = random.randrange(1, 50)
+            random_xspeed = random.randrange(-5, 5)
+            random_yspeed = random.randrange(1, 5)
+            random_meteor = Meteor(random_meteor, random_xpos, random_ypos, random_xspeed, random_yspeed)
+            meteor_group.add(random_meteor)
+
+    screen.fill((45, 45, 60))
 
     meteor_group.draw(screen)
     meteor_group.update()
