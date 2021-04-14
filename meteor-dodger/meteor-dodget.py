@@ -7,16 +7,24 @@ class SpaceShip(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load(path)
         self.rect = self.image.get_rect(center=(x_pos, y_pos))
+        self.shield_surface = pygame.image.load('game-assets/shield.png')
+        self.health = 5
 
     def update(self):
         self.rect.center = pygame.mouse.get_pos()
         self.screen_constrain()
+        self.display_shield()
 
     def screen_constrain(self):
         self.rect.right = 1280 if self.rect.right >= 1280 else self.rect.right
         self.rect.left = 0 if self.rect.left <= 0 else self.rect.left
         self.rect.top = 0 if self.rect.top <= 0 else self.rect.top
         self.rect.bottom = 720 if self.rect.bottom >= 720 else self.rect.bottom
+
+    def display_shield(self):
+        for index, shield in enumerate(range(self.health)):
+            screen.blit(self.shield_surface, (10 + index * 50, 10))
+
 
 class Meteor(pygame.sprite.Sprite):
     def __init__(self, path, x_pos, y_pos, x_speed, y_speed):
@@ -57,7 +65,6 @@ class Laser(pygame.sprite.Sprite):
 
     def destroy(self):
         self.kill() if self.rect.bottom < 0 else None
-
 
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
